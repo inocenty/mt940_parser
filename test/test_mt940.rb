@@ -1,6 +1,6 @@
-require_relative 'helper'
+require 'helper'
 require 'yaml'
-YAML::ENGINE.yamler = 'psych'
+#YAML::ENGINE.yamler = 'psych'
 
 
 # $DEBUG = true
