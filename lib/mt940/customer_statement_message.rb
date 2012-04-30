@@ -1,5 +1,5 @@
 # this is a beautification wrapper around the low-level
-# MT940.parse command. use it in order to make dealing with 
+# MT940.parse command. use it in order to make dealing with
 # the data easier
 class MT940
 
@@ -10,12 +10,12 @@ class MT940
     def self.parse_file(file)
       self.parse(File.read(file))
     end
-    
+
     def self.parse(data)
       messages = MT940.parse(data)
       messages.map { |msg| new(msg) }
     end
-    
+
     def initialize(raw_mt940)
       @raw = raw_mt940
       @account = @raw.find { |line| line.class == MT940::Account }
@@ -35,16 +35,16 @@ class MT940
       @account.account_number
     end
 
-    private 
-    
+    private
+
     def ensure_is_info_line!(line)
       unless line.is_a?(MT940::StatementLineInformation)
-        raise StandardError, "Unexpected Structure; expected StatementLineInformation, but was #{line.class}" 
+        raise StandardError, "Unexpected Structure; expected StatementLineInformation, but was #{line.class}"
       end
     end
-    
+
   end
-  
+
   class StatementLineBundle
 
     METHOD_MAP = {
@@ -69,5 +69,5 @@ class MT940
     end
 
   end
-  
+
 end
