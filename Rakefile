@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'bundler'
+
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -30,6 +31,11 @@ Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
+end
+
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:rspec) do |t|
+  t.rspec_opts = '--color --format documentation'
 end
 
 begin
