@@ -38,17 +38,11 @@ RSpec::Core::RakeTask.new(:rspec) do |t|
   t.rspec_opts = '--color --format documentation'
 end
 
-begin
-  require 'rcov/rcovtask'
-  Rcov::RcovTask.new do |test|
-    test.libs << 'test'
-    test.pattern = 'test/**/test_*.rb'
-    test.verbose = true
-  end
-rescue LoadError
-  task :rcov do
-    abort "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
-  end
+desc  "Run all specs with rcov"
+RSpec::Core::RakeTask.new(:rcov) do |t|
+  t.rspec_opts = '--color --format documentation'
+  t.rcov = true
+  t.rcov_opts = '--exclude /gems/,spec'
 end
 
 task :default => :test
