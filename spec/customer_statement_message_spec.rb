@@ -2,86 +2,101 @@ require 'spec_helper'
 require 'mt940'
 require 'mt940/customer_statement_message'
 
+#TODO: Make sure name align closly with the MT940 specifications
+#TODO: Add a method to get the currency of the account.
+
 describe MT940::CustomerStatementMessage do
 
-  before do
-    file = File.dirname(__FILE__) + "/fixtures/sepa_snippet.txt"
-    messages = MT940::CustomerStatementMessage.parse_file(file)
-    @message = messages.first
-    @message_2 = messages.last
-  end
+  let(:file) { File.dirname(__FILE__) + "/fixtures/sepa_snippet.txt" }
+  let(:messages) { MT940::CustomerStatementMessage.parse_file(file) }
+  let(:message) { messages.first }
+  let(:message_2) { messages.last }
 
   it 'has a bank code' do
-    @message.bank_code.should == "50880050"
+    message.bank_code.should == "50880050"
   end
 
-  def test_it_should_know_the_account_number
-    assert_equal "0194787400888", @message.account_number
+  it 'has a account number' do
+    message.account_number.should == "0194787400888"
   end
 
-  def test_it_should_have_statement_lines
-    assert @message.statement_lines.respond_to?(:each)
-    assert_equal 4, @message.statement_lines.size
+  it 'has statement lines' do
+    message.statement_lines.should respond_to(:each)
+    message.statement_lines.size.should == 4
   end
 
-  def test_statement_lines_should_have_amount_info_credit
-    line = @message.statement_lines.first
-    assert_equal 5099005, line.amount
-    assert_equal :credit, line.funds_code
+  context 'statement lines' do
+    #TODO: I don't like the use of fixtures here as it is difficult to see
+    #what is being tested and why the tests have those values. I want to inline
+    #some of the examples in the fixtures.
+
+    #TODO: These tests should maybe go into a separate file and test through
+    # the StatementLineBundle class
+    let(:line) { message.statement_lines.first }
+
+    it 'have credited amounts' do
+      #TODO: This should maybe return a Money object based on the currency in the
+      #statement.
+      line.amount.should == 5099005
+      #TODO: funds_code doesn't seam like a good name for this, will need to check
+      #the docs to find a more appropriate name. Suggestions: mark, direction.
+      line.funds_code.should == :credit
+    end
+
+    it 'have debited amounts' do
+      line = message_2.statement_lines.first
+      #TODO: Same as above.
+      line.amount.should == 8
+      line.funds_code.should == :debit
+    end
+
+    it 'have a account holder' do
+      #TODO: There should be better string formatting here
+      line.account_holder.should == "KARL\n        KAUFMANN"
+    end
+
+    it 'has statement lines that have a bank code' do
+      #TODO: check this method has a appropriate name.
+      line.bank_code.should == "DRESDEFF508"
+    end
+
+    it 'has statement lines that a have account number' do
+      #TODO: check this method has a appropriate name.
+      line.account_number.should == "DE14508800500194785000"
+    end
+
+    it 'has details' do
+      #TODO: Maybe change #details to #narrative
+      line.details.should ==
+        "EREF+EndToEndId TFNR 22 004\n 00001\nSVWZ+Verw CTSc-01 BC-PPP TF\nNr 22 004"
+    end
+
+    it 'has an entry date' do
+      #TODO: check this method has a appropriate name.
+      line.entry_date.should == Date.parse("2007-09-04")
+    end
+
+    it 'has a value date' do
+      #TODO: check this method has a appropriate name.
+      line.value_date.should == Date.parse("2007-09-07")
+    end
+
+    it 'raises a no method error when asking for unknown info' do
+      expect { line.unknown_method }.to raise_error NoMethodError
+    end
   end
 
-  def test_statement_lines_should_have_amount_info_debit
-    line = @message_2.statement_lines.first
-    assert_equal 8, line.amount
-    assert_equal :debit, line.funds_code
-  end
-
-  def test_statement_lines_should_have_account_holder
-    line = @message.statement_lines.first
-    assert_equal "KARL\n        KAUFMANN", line.account_holder
-  end
-
-  def test_statement_lines_info_should_have_bank_code
-    line = @message.statement_lines.first
-    assert_equal "DRESDEFF508", line.bank_code
-  end
-
-  def test_statement_lines_info_should_have_account_number
-    line = @message.statement_lines.first
-    assert_equal "DE14508800500194785000", line.account_number
-  end
-
-  def test_statement_lines_should_have_details
-    line = @message.statement_lines.first
-    assert_equal "EREF+EndToEndId TFNR 22 004\n 00001\nSVWZ+Verw CTSc-01 BC-PPP TF\nNr 22 004", line.details
-  end
-
-  def test_statement_lines_should_have_an_entry_date
-    line = @message.statement_lines.first
-    assert_equal Date.parse("2007-09-04"), line.entry_date
-  end
-
-  def test_statement_lines_should_have_a_value_date
-    line = @message.statement_lines.first
-    assert_equal Date.parse("2007-09-07"), line.value_date
-  end
-
-  def test_parsing_the_file_should_return_two_message_objects
-    file = File.dirname(__FILE__) + "/fixtures/sepa_snippet.txt"
+  it 'parses a message file into individual statements' do
     messages = MT940::CustomerStatementMessage.parse_file(file)
-    assert_equal 2, messages.size
-    assert_equal "0194787400888", messages[0].account_number
-    assert_equal "0194791600888", messages[1].account_number
+    messages.size.should == 2
+    messages[0].account_number.should == "0194787400888"
+    messages[1].account_number.should == "0194791600888"
   end
 
-  def test_parsing_a_file_with_broken_structure_should_raise_an_exception
+  it 'fails when it parses a file with a broken structure' do
     file = File.dirname(__FILE__) + "/fixtures/sepa_snippet_broken.txt"
-    assert_raise(StandardError) { MT940::CustomerStatementMessage.parse_file(file) }
+    #TODO: I think raising a more specific error is better.
+    expect { MT940::CustomerStatementMessage.parse_file(file) }.to raise_error StandardError
   end
 
-  def test_should_raise_method_missing_when_asking_statement_lines_for_unknown_stuff
-    file = File.dirname(__FILE__) + "/fixtures/sepa_snippet.txt"
-    message = MT940::CustomerStatementMessage.parse_file(file).first
-    assert_raise(NoMethodError) { message.statement_lines.first.foo  }
-  end
 end
