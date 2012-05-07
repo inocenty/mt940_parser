@@ -1,3 +1,4 @@
+require 'date'
 require 'mt940/customer_statement_message'
 
 class MT940
@@ -243,7 +244,7 @@ class MT940
 
     private
     def parse_sheet(sheet)
-      lines = sheet.split("\r\n")
+      lines = sheet.split(/\r?\n(?=:)/)
       fields = lines.reject { |line| line.empty? }.map { |line| Field.for(line) }
       fields
     end
