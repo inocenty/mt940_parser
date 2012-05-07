@@ -18,7 +18,7 @@ class MT940
 
     def initialize(raw_mt940)
       @raw = raw_mt940
-      @account = @raw.find { |line| line.class == MT940::Account }
+      @account = @raw.find { |line| line.class == MT940::AccountIdentification }
       @statement_lines = []
       @raw.each_with_index do |line, i|
         next unless line.class == MT940::StatementLine

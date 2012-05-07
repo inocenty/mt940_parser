@@ -16,7 +16,7 @@ class MT940
           klass = {
             '20' => Job,
             '21' => Reference,
-            '25' => Account,
+            '25' => AccountIdentification,
             '28' => Statement,
             '60' => AccountBalance,
             '61' => StatementLine,
@@ -24,7 +24,7 @@ class MT940
             '64' => ValutaBalance,
             '65' => FutureValutaBalance,
             '86' => StatementLineInformation
-          }[number]
+          }[number] #Probably be using Hash.fetch(number)
 
           raise StandardError, "Field #{number} is not implemented" unless klass
 
@@ -34,6 +34,12 @@ class MT940
         end
       end
     end
+
+    # I don't like how inheritance is overused here just so every class is
+    # initiated in the same way.
+    #
+    # Also I do not like the way that all the parsing is done upfront. I think
+    # a lazier approach should be lazier.
 
     def initialize(modifier, content)
       @modifier = modifier
@@ -75,12 +81,41 @@ class MT940
   end
 
   # 25
+  class AccountIdentification
+    attr_reader :account_identifier
+    MATCHER_REGEX = /.{1,35}/ #any 35 chars (35x from the docs)
+
+    def initialize(modifier, content)
+      @modifier = modifier
+      @content = content
+      parse_content(content)
+    end
+
+    def parse_content(content)
+      @account_identifier = content.match(MATCHER_REGEX)[0]
+    end
+
+    # fail over to the old Account class 
+    def method_missing(method, *args, &block)
+      @fail_over_implementation ||= Account.new(@modifier, @content)
+      @fail_over_implementation.send(method)
+    end
+  end
+
+
   class Account < Field
+    #This is not how field 25 behaves
+    #The documentation states that the contents of this field is
+    #  
+    #  35x
+    #
+    #so you can only attribute a account number (usually as a IBAN).
     attr_reader :bank_code, :account_number, :account_currency
 
     CONTENT = /^(.{8,11})\/(\d{0,23})([A-Z]{3})?$/
 
     def parse_content(content)
+      warn "MT940::Account should be deprecated"
       content.match(CONTENT)
       @bank_code, @account_number, @account_currency = $1, $2, $3
     end
