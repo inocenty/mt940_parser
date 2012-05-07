@@ -244,7 +244,7 @@ class MT940
 
     private
     def parse_sheet(sheet)
-      lines = sheet.split(/\r?\n(?=:)/)
+      lines = sheet.split(/\r?\n\s*(?=:)/)
       fields = lines.reject { |line| line.empty? }.map { |line| Field.for(line) }
       fields
     end
