@@ -11,7 +11,7 @@ class MT940
     class << self
 
       def for(line)
-        if line.match(/^:(\d{2,2})(\w)?:(.*)$/)
+        if line.match(/^:(\d{2,2})(\w)?:(.*)/m)
           number, modifier, content = $1, $2, $3
           klass = {
             '20' => Job,
@@ -39,7 +39,7 @@ class MT940
     # initiated in the same way.
     #
     # Also I do not like the way that all the parsing is done upfront. I think
-    # a lazier approach should be lazier.
+    # a lazier approach should be used.
 
     def initialize(modifier, content)
       @modifier = modifier
@@ -232,7 +232,9 @@ class MT940
     end
 
     def parse_content(content)
-      @narrative = content.split(/\n/).map(&:strip)
+      @narrative = content.split(/\n/).map(&:strip).reject do |line|
+        line.empty? || line == '-'
+      end
     end
 
     #Failover to StatementLineInformation

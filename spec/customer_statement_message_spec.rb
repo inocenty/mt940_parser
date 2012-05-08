@@ -25,6 +25,23 @@ describe MT940::CustomerStatementMessage do
     message.statement_lines.size.should == 4
   end
 
+  it 'handles multi-lines for Information to Account owners fields' do
+    message = ":20:STMT20120604
+               :25:111234123412134124
+               :28C:01234
+               :60F:C120603USD0,00
+               :62F:C120603USD0,00
+               :64:C120603USD0,00
+               :86:NAME ACCOUNT OWNER:SOME ENTITY
+               ACCOUNT DESCRIPTION:  CURR
+               -"
+
+    statement = MT940::CustomerStatementMessage.parse(message).first
+    statement.narrative.should == ['NAME ACCOUNT OWNER:SOME ENTITY',
+                                   'ACCOUNT DESCRIPTION:  CURR']
+
+  end
+
   context 'statement lines' do
     #TODO: I don't like the use of fixtures here as it is difficult to see
     #what is being tested and why the tests have those values. I want to inline

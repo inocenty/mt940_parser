@@ -35,6 +35,11 @@ class MT940
       @account.account_number
     end
 
+    def narrative
+      @information_to_account_owner = @raw.last
+      @information_to_account_owner.narrative
+    end
+
     private
 
     def ensure_is_info_line!(line)
