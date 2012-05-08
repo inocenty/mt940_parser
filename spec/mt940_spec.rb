@@ -15,4 +15,16 @@ describe MT940 do
       end
     end
   end
+
+  describe MT940::InformationToAccountOwner do
+    it 'gives back the narrative in lines' do
+      content = 'NAME ACCOUNT OWNER: FEANDO LIMITED
+                 ACCOUNT DESCRIPTION: CURR'
+
+      info = MT940::InformationToAccountOwner.new('some unsed modifier', content)
+
+      info.narrative.should == ['NAME ACCOUNT OWNER: FEANDO LIMITED',
+                                'ACCOUNT DESCRIPTION: CURR']
+    end
+  end
 end

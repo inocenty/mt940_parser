@@ -23,7 +23,7 @@ class MT940
             '62' => ClosingBalance,
             '64' => ValutaBalance,
             '65' => FutureValutaBalance,
-            '86' => StatementLineInformation
+            '86' => InformationToAccountOwner
           }[number] #Probably be using Hash.fetch(number)
 
           raise StandardError, "Field #{number} is not implemented" unless klass
@@ -222,11 +222,34 @@ class MT940
   end
 
   # 86
+  class InformationToAccountOwner
+    attr_reader :narrative
+
+    def initialize(modifier, content)
+      @modifier = modifier
+      @content = content
+      parse_content(content)
+    end
+
+    def parse_content(content)
+      @narrative = content.split(/\n/).map(&:strip)
+    end
+
+    #Failover to StatementLineInformation
+    def method_missing(method, *args, &block)
+      @fail_over_implementation ||= StatementLineInformation.new(@modifier, @content)
+      @fail_over_implementation.send(method)
+    end
+  end
+
   class StatementLineInformation < Field
+    # This class again is doing too much and appears to be specific to a
+    # particular implementation and does not appear to follow the swift standard.
     attr_reader :code, :transaction_description, :prima_nota, :details, :bank_code, :account_number,
       :account_holder, :text_key_extension, :not_implemented_fields
 
     def parse_content(content)
+      warn 'StatementLineInformation should be deprecated'
       content.match(/^(\d{3})((.).*)$/)
       @code = $1.to_i
 

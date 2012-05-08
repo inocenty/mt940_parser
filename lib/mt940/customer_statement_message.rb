@@ -38,7 +38,7 @@ class MT940
     private
 
     def ensure_is_info_line!(line)
-      unless line.is_a?(MT940::StatementLineInformation)
+      unless line.is_a?(MT940::InformationToAccountOwner)
         raise StandardError, "Unexpected Structure; expected StatementLineInformation, but was #{line.class}"
       end
     end
