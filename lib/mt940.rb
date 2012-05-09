@@ -1,4 +1,5 @@
 require 'date'
+require 'bigdecimal'
 require 'mt940/customer_statement_message'
 
 class MT940
@@ -18,7 +19,7 @@ class MT940
             '21' => Reference,
             '25' => AccountIdentification,
             '28' => StatementNumber,
-            '60' => AccountBalance,
+            '60' => OpeningBalance,
             '61' => StatementLine,
             '62' => ClosingBalance,
             '64' => ValutaBalance,
@@ -83,7 +84,7 @@ class MT940
   # 25
   class AccountIdentification
     attr_reader :account_identifier
-    MATCHER_REGEX = /.{1,35}/ #any 35 chars (35x from the docs)
+    MATCHER_REGEX = /(.{1,35})/ #any 35 chars (35x from the docs)
 
     def initialize(modifier, content)
       @modifier = modifier
@@ -92,10 +93,10 @@ class MT940
     end
 
     def parse_content(content)
-      @account_identifier = content.match(MATCHER_REGEX)[0]
+      @account_identifier = content.match(MATCHER_REGEX)[1]
     end
 
-    # fail over to the old Account class 
+    # fail over to the old Account class
     def method_missing(method, *args, &block)
       @fail_over_implementation ||= Account.new(@modifier, @content)
       @fail_over_implementation.send(method)
@@ -106,7 +107,7 @@ class MT940
   class Account < Field
     #This is not how field 25 behaves
     #The documentation states that the contents of this field is
-    #  
+    #
     #  35x
     #
     #so you can only attribute a account number (usually as a IBAN).
@@ -155,8 +156,8 @@ class MT940
     end
   end
 
-  # 60
   class AccountBalance < Field
+    #This needs to be refactored.
     attr_reader :balance_type, :sign, :currency, :amount, :date
 
     CONTENT = /^(C|D)(\w{6})(\w{3})(\d{1,12},\d{0,2})$/
@@ -179,8 +180,11 @@ class MT940
       end
 
       raw_date = $2
+
       @currency = $3
-      @amount = parse_amount_in_cents($4)
+
+      amount_str = $4.gsub(/,/, '.')
+      @amount = BigDecimal.new(amount_str)
 
       @date = case raw_date
         when 'ALT', '0'
@@ -225,6 +229,10 @@ class MT940
     def value_date
       @date
     end
+  end
+
+  # 60
+  class OpeningBalance < AccountBalance
   end
 
   # 62

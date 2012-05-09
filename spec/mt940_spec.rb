@@ -47,4 +47,48 @@ describe MT940 do
     end
 
   end
+
+  require 'ruby-debug'
+  describe MT940::AccountBalance do
+
+    let(:account_balance) { MT940::AccountBalance.new('some modifier', 'D120417USD13042,03') }
+
+    context 'the sign' do
+      it 'is :credit when the first char of the content is "C"' do
+        account_balance = MT940::AccountBalance.new('some modifier', 'C120417USD0,00')
+        account_balance.sign.should == :credit
+      end
+
+      it 'is :debit when the first char of the content is "D"' do
+        account_balance = MT940::AccountBalance.new('some modifier', 'D120417USD0,00')
+        account_balance.sign.should == :debit
+      end
+    end
+
+    context 'the balance type' do
+      it 'is :start when the modifier is "F"' do
+        account_balance = MT940::AccountBalance.new('F', 'C120417USD0,00')
+        account_balance.sign.should == :credit
+      end
+
+      it 'is :intermediate when the modifier is "M"' do
+        account_balance = MT940::AccountBalance.new('M', 'D120417USD0,00')
+        account_balance.sign.should == :debit
+      end
+    end
+
+    it 'parses the date of the balance from the 6 digits after the sign' do
+      account_balance.date.should == Date.parse('2012-04-17')
+    end
+
+    it 'parses the currency of the balance' do
+      account_balance.currency.should == 'USD'
+    end
+
+    it 'parses the balance amount into a big decimal' do
+      account_balance.amount.should be_a BigDecimal
+      account_balance.amount.should == BigDecimal.new('13042.03')
+    end
+
+  end
 end
