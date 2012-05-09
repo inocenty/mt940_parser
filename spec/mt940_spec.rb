@@ -27,4 +27,24 @@ describe MT940 do
                                 'ACCOUNT DESCRIPTION: CURR']
     end
   end
+
+  describe MT940::StatementNumber do
+    let(:content) { '01704/01234' }
+
+    subject { MT940::StatementNumber.new('some unused modifier', content) }
+
+    it 'gives back the number of the statement as a string' do
+      subject.number.should == '01704'
+    end
+
+    it 'gives back the sequence number of the statement' do
+      subject.sequence.should == '01234'
+    end
+
+    it 'gives back nil if the sequence number is not included' do
+      statement_number = MT940::StatementNumber.new('some unused modifier', '01704')
+      statement_number.sequence.should be_nil
+    end
+
+  end
 end

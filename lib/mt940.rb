@@ -17,7 +17,7 @@ class MT940
             '20' => Job,
             '21' => Reference,
             '25' => AccountIdentification,
-            '28' => Statement,
+            '28' => StatementNumber,
             '60' => AccountBalance,
             '61' => StatementLine,
             '62' => ClosingBalance,
@@ -122,12 +122,30 @@ class MT940
   end
 
   # 28
+  class StatementNumber
+    attr_reader :number, :sequence
+
+    MATCHER_REGEX = /\d{1,5} (?: \/ \d{1,5})/ # 5n[/5n]
+
+    def initialize(modifier, content)
+      @modifier = modifier
+      @content = content
+      parse_content(content)
+    end
+
+    def parse_content(content)
+      @number, @sequence = content.split('/')
+    end
+
+  end
+
   class Statement < Field
     attr_reader :number, :sheet
 
     CONTENT = /^(0|(\d{5,5})\/(\d{2,5}))$/
 
     def parse_content(content)
+      warn 'MT940::Statement is deprecated'
       content.match(CONTENT)
       if $1 == '0'
         @number = @sheet = 0
