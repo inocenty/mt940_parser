@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Thies C. Arntzen", "Phillip Oertel"]
-  s.date = "2012-04-20"
+  s.date = "2012-05-10"
   s.email = "developers@betterplace.org"
   s.extra_rdoc_files = [
     "LICENSE",
@@ -17,6 +17,8 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".document",
+    ".rspec",
+    ".rvmrc",
     ".specification",
     "Gemfile",
     "Gemfile.lock",
@@ -35,6 +37,25 @@ Gem::Specification.new do |s|
     "lib/mt940.rb",
     "lib/mt940/customer_statement_message.rb",
     "mt940_parser.gemspec",
+    "spec/customer_statement_message_spec.rb",
+    "spec/fixtures/currency_in_25.txt",
+    "spec/fixtures/currency_in_25.yml",
+    "spec/fixtures/empty_86.txt",
+    "spec/fixtures/empty_86.yml",
+    "spec/fixtures/empty_entry_date.txt",
+    "spec/fixtures/empty_entry_date.yml",
+    "spec/fixtures/empty_line.txt",
+    "spec/fixtures/empty_line.yml",
+    "spec/fixtures/missing_crlf_at_end.txt",
+    "spec/fixtures/missing_crlf_at_end.yml",
+    "spec/fixtures/sepa_mt9401.txt",
+    "spec/fixtures/sepa_mt9401.yml",
+    "spec/fixtures/sepa_snippet.txt",
+    "spec/fixtures/sepa_snippet_broken.txt",
+    "spec/fixtures/with_binary_character.txt",
+    "spec/fixtures/with_binary_character.yml",
+    "spec/mt940_spec.rb",
+    "spec/spec_helper.rb",
     "test/fixtures/currency_in_25.txt",
     "test/fixtures/currency_in_25.yml",
     "test/fixtures/empty_86.txt",
@@ -61,6 +82,9 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.8.15"
   s.summary = "MT940 parses account statements in the SWIFT MT940 format."
   s.test_files = [
+    "spec/customer_statement_message_spec.rb",
+    "spec/mt940_spec.rb",
+    "spec/spec_helper.rb",
     "test/helper.rb",
     "test/test_customer_statement_message.rb",
     "test/test_mt940.rb"
@@ -70,21 +94,33 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_development_dependency(%q<rspec>, ["~> 2.3.0"])
+      s.add_development_dependency(%q<rspec>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
+      s.add_development_dependency(%q<ruby-debug>, [">= 0"])
+      s.add_development_dependency(%q<ruby-debug19>, [">= 0"])
+      s.add_development_dependency(%q<simplecov>, [">= 0"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
+      s.add_development_dependency(%q<rdoc>, [">= 0"])
     else
-      s.add_dependency(%q<rspec>, ["~> 2.3.0"])
+      s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
+      s.add_dependency(%q<ruby-debug>, [">= 0"])
+      s.add_dependency(%q<ruby-debug19>, [">= 0"])
+      s.add_dependency(%q<simplecov>, [">= 0"])
       s.add_dependency(%q<rcov>, [">= 0"])
+      s.add_dependency(%q<rdoc>, [">= 0"])
     end
   else
-    s.add_dependency(%q<rspec>, ["~> 2.3.0"])
+    s.add_dependency(%q<rspec>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
+    s.add_dependency(%q<ruby-debug>, [">= 0"])
+    s.add_dependency(%q<ruby-debug19>, [">= 0"])
+    s.add_dependency(%q<simplecov>, [">= 0"])
     s.add_dependency(%q<rcov>, [">= 0"])
+    s.add_dependency(%q<rdoc>, [">= 0"])
   end
 end
 
