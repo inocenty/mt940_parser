@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "mt940_parser"
-  s.version = "1.0.3"
+  s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Thies C. Arntzen", "Phillip Oertel"]
-  s.date = "2012-05-10"
+  s.date = "2012-05-31"
   s.email = "developers@betterplace.org"
   s.extra_rdoc_files = [
     "LICENSE",
@@ -94,6 +94,7 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
+      s.add_development_dependency(%q<awesome_print>, [">= 0"])
       s.add_development_dependency(%q<rspec>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.5.2"])
@@ -103,6 +104,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rcov>, [">= 0"])
       s.add_development_dependency(%q<rdoc>, [">= 0"])
     else
+      s.add_dependency(%q<awesome_print>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
@@ -113,6 +115,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rdoc>, [">= 0"])
     end
   else
+    s.add_dependency(%q<awesome_print>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.5.2"])
