@@ -321,10 +321,10 @@ class MT940
 
   class << self
     def parse(text)
-      new_text = text.clone
-      new_text << "\r\n" if new_text[-1,1] == '-'
-      raw_sheets = new_text.split(/^-\r\n/).map { |sheet| sheet.gsub(/\r\n(?!:)/, '') }
-      sheets = raw_sheets.map { |raw_sheet| parse_sheet(raw_sheet) }
+      stripped = text.clone.strip
+      stripped << "\r\n" if stripped[-1,1] == '-'
+      raw_sheets = stripped.split(/^-\r\n/).map { |sheet| sheet.gsub(/\r\n(?!:)/, '') }
+      raw_sheets.map { |raw_sheet| parse_sheet(raw_sheet) }
     end
 
 
