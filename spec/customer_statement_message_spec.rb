@@ -54,7 +54,7 @@ describe MT940::CustomerStatementMessage do
     it 'have credited amounts' do
       #TODO: This should maybe return a Money object based on the currency in the
       #statement.
-      line.amount.should == 5099005
+      line.amount.should == BigDecimal.new("50990.05")
       #TODO: funds_code doesn't seam like a good name for this, will need to check
       #the docs to find a more appropriate name. Suggestions: mark, direction.
       line.funds_code.should == :credit
@@ -63,7 +63,7 @@ describe MT940::CustomerStatementMessage do
     it 'have debited amounts' do
       line = message_2.statement_lines.first
       #TODO: Same as above.
-      line.amount.should == 8
+      line.amount.should == BigDecimal.new("0.08")
       line.funds_code.should == :debit
     end
 

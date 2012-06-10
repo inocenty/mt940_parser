@@ -216,8 +216,9 @@ class MT940
         when 'RD'
           :return_debit
       end
-
-      @amount = parse_amount_in_cents($4)
+      amount_str = $4.gsub(/,/, '.')
+      @amount = BigDecimal.new(amount_str)
+      
       @swift_code = $5
       @reference = $6
       @transaction_description = $7
@@ -274,7 +275,7 @@ class MT940
     # This class again is doing too much and appears to be specific to a
     # particular implementation and does not appear to follow the swift standard.
     attr_reader :code, :transaction_description, :prima_nota, :details, :bank_code, :account_number,
-      :account_holder, :text_key_extension, :not_implemented_fields
+      :account_holder, :text_key_extension, :not_implemented_fields, :account_identifier
 
     def parse_content(content)
       warn 'StatementLineInformation should be deprecated'
@@ -294,8 +295,10 @@ class MT940
               @transaction_description = content
             when 10
               @prima_nota = content
-            when 20..29, 60..63
+            when 20..25
               details << content
+            when 26
+              @account_identifier = content
             when 30
               @bank_code = content
             when 31

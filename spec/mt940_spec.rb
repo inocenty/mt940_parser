@@ -48,7 +48,7 @@ describe MT940 do
 
   end
 
-  require 'ruby-debug'
+#  require 'ruby-debug'
   describe MT940::AccountBalance do
 
     let(:account_balance) { MT940::AccountBalance.new('some modifier', 'D120417USD13042,03') }
